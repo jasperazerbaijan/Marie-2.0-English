@@ -449,7 +449,7 @@ __help__ = """
  - /kick <userhandle>: qovmaq. (mesajına cavab yazmaqla, tağ ilə (Məsələn: /kick @username))
 """
 
-__mod_name__ = "Bans"
+__mod_name__ = "Ban"
 
 BAN_HANDLER = CommandHandler("ban", ban, pass_args=True, filters=Filters.group)
 TEMPBAN_HANDLER = CommandHandler(["tban", "tempban"], temp_ban, pass_args=True, filters=Filters.group)
