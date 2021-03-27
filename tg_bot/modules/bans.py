@@ -17,31 +17,31 @@ from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.helper_funcs.filters import CustomFilters
 
 RBAN_ERRORS = {
-    "User is an administrator of the chat",
-    "Chat not found",
-    "Not enough rights to restrict/unrestrict chat member",
+    "İstifadəçi söhbətin idarəedicisidir",
+    "Çat boşdur",
+    "Söhbət üzvünü məhdudlaşdırmaq / məhdudlaşdırmamaq üçün kifayət qədər hüquq yoxdur",
     "User_not_participant",
     "Peer_id_invalid",
-    "Group chat was deactivated",
-    "Need to be inviter of a user to kick it from a basic group",
+    "Qrup çatı deaktivdir",
+    "Əsas qrupdan salmaq üçün bir istifadəçiyə dəvətçi olmaq lazımdır",
     "Chat_admin_required",
-    "Only the creator of a basic group can kick group administrators",
+    "Yalnız əsas qrupun yaradıcısı qrup idarəçilərinə təpik ata bilər",
     "Channel_private",
-    "Not in the chat"
+    "Söhbətdə deyil"
 }
 
 RUNBAN_ERRORS = {
-    "User is an administrator of the chat",
-    "Chat not found",
-    "Not enough rights to restrict/unrestrict chat member",
+    "İstifadəçi söhbətin idarəedicisidir",
+    "Çat boşdur",
+    "Söhbət üzvünü məhdudlaşdırmaq / məhdudlaşdırmamaq üçün kifayət qədər hüquq yoxdur",
     "User_not_participant",
     "Peer_id_invalid",
-    "Group chat was deactivated",
-    "Need to be inviter of a user to kick it from a basic group",
+    "Qrup çatı deaktivdir",
+    "Əsas qrupdan salmaq üçün bir istifadəçiyə dəvətçi olmaq lazımdır",
     "Chat_admin_required",
-    "Only the creator of a basic group can kick group administrators",
+    "Yalnız əsas qrupun yaradıcısı qrup idarəçilərinə təpik ata bilər",
     "Channel_private",
-    "Not in the chat"
+    "Söhbətdə deyil"
 }
 
 
@@ -59,33 +59,33 @@ def ban(bot: Bot, update: Update, args: List[str]) -> str:
     user_id, reason = extract_user_and_text(message, args)
 
     if not user_id:
-        message.reply_text("You don't seem to be referring to a user.")
+        message.reply_text("Deyəsən bir istifadəçiyə istinad etmirsiniz.")
         return ""
 
     try:
         member = chat.get_member(user_id)
     except BadRequest as excp:
-        if excp.message == "User not found":
-            message.reply_text("I can't seem to find this user")
+        if excp.message == "İstifadəçi tapılmadı":
+            message.reply_text("Görünür bu istifadəçini tapa bilmirəm")
             return ""
         else:
             raise
 
     if is_user_ban_protected(chat, user_id, member):
-        message.reply_text("I really wish I could ban admins...")
+        message.reply_text("Kaş ki adminləri qadağan edə biləydim ... :)")
         return ""
 
     if user_id == bot.id:
-        message.reply_text("I'm not gonna BAN myself, are you crazy?")
+        message.reply_text("Mən özümü ban etməyəcəm, dəli olmusan?")
         return ""
 
     log = "<b>{}:</b>" \
-          "\n#BANNED" \
+          "\n#Ban olunmuşlar" \
           "\n<b>Admin:</b> {}" \
-          "\n<b>User:</b> {}".format(html.escape(chat.title), mention_html(user.id, user.first_name),
+          "\n<b>İstifadəçi:</b> {}".format(html.escape(chat.title), mention_html(user.id, user.first_name),
                                      mention_html(member.user.id, member.user.first_name))
     if reason:
-        log += "\n<b>Reason:</b> {}".format(reason)
+        log += "\n<b>Səbəb:</b> {}".format(reason)
 
     try:
         chat.kick_member(user_id)
@@ -96,15 +96,15 @@ def ban(bot: Bot, update: Update, args: List[str]) -> str:
         return log
 
     except BadRequest as excp:
-        if excp.message == "Reply message not found":
+        if excp.message == "Cavab mesajı tapılmadı":
             # Do not reply
-            message.reply_text('Banned!', quote=False)
+            message.reply_text('Ban olundu!', quote=False)
             return log
         else:
             LOGGER.warning(update)
-            LOGGER.exception("ERROR banning user %s in chat %s (%s) due to %s", user_id, chat.title, chat.id,
+            LOGGER.exception("ERROR  %s Səbəbiylə %s (%s) istifadəçi ban olunmadı %s", user_id, chat.title, chat.id,
                              excp.message)
-            message.reply_text("Well damn, I can't ban that user.")
+            message.reply_text("Lənət olsun, o istifadəçini ban edə bilmirəm.")
 
     return ""
 
@@ -122,28 +122,28 @@ def temp_ban(bot: Bot, update: Update, args: List[str]) -> str:
     user_id, reason = extract_user_and_text(message, args)
 
     if not user_id:
-        message.reply_text("You don't seem to be referring to a user.")
+        message.reply_text("Deyəsən bir istifadəçiyə istinad etmirsiniz.")
         return ""
 
     try:
         member = chat.get_member(user_id)
     except BadRequest as excp:
-        if excp.message == "User not found":
-            message.reply_text("I can't seem to find this user")
+        if excp.message == "İstifadəçi tapılmadı":
+            message.reply_text("Görünür bu istifadəçini tapa bilmirəm")
             return ""
         else:
             raise
 
     if is_user_ban_protected(chat, user_id, member):
-        message.reply_text("I really wish I could ban admins...")
+        message.reply_text("Kaş ki adminləri qadağan edə biləydim ... :)")
         return ""
 
     if user_id == bot.id:
-        message.reply_text("I'm not gonna BAN myself, are you crazy?")
+        message.reply_text("Mən özümü ban etməyəcəm, dəli olmusan?")
         return ""
 
     if not reason:
-        message.reply_text("You haven't specified a time to ban this user for!")
+        message.reply_text("Bu istifadəçini qadağan edəcək bir vaxt təyin etməmisiniz!")
         return ""
 
     split_reason = reason.split(None, 1)
@@ -160,30 +160,30 @@ def temp_ban(bot: Bot, update: Update, args: List[str]) -> str:
         return ""
 
     log = "<b>{}:</b>" \
-          "\n#TEMP BANNED" \
+          "\n#Ban olunmuşlar(vaxt)" \
           "\n<b>Admin:</b> {}" \
-          "\n<b>User:</b> {}" \
-          "\n<b>Time:</b> {}".format(html.escape(chat.title), mention_html(user.id, user.first_name),
+          "\n<b>istifadəçi:</b> {}" \
+          "\n<b>Vaxt:</b> {}".format(html.escape(chat.title), mention_html(user.id, user.first_name),
                                      mention_html(member.user.id, member.user.first_name), time_val)
     if reason:
-        log += "\n<b>Reason:</b> {}".format(reason)
+        log += "\n<b>Səbəb:</b> {}".format(reason)
 
     try:
         chat.kick_member(user_id, until_date=bantime)
         bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
-        message.reply_text("Banned! User will be banned for {}.".format(time_val))
+        message.reply_text("Ban olundu! Bu vaxta qədər: {}.".format(time_val))
         return log
 
     except BadRequest as excp:
-        if excp.message == "Reply message not found":
+        if excp.message == "Cavab mesajı tapılmadı":
             # Do not reply
-            message.reply_text("Banned! User will be banned for {}.".format(time_val), quote=False)
+            message.reply_text("Ban olundu! Bu vaxta qədər: {}.".format(time_val), quote=False)
             return log
         else:
             LOGGER.warning(update)
-            LOGGER.exception("ERROR banning user %s in chat %s (%s) due to %s", user_id, chat.title, chat.id,
+            LOGGER.exception("ERROR %s Səbəbiylə %s (%s) ban olunmadı %s", user_id, chat.title, chat.id,
                              excp.message)
-            message.reply_text("Well damn, I can't ban that user.")
+            message.reply_text("Lənət olsun, ban edə bilmirəm.")
 
     return ""
 
@@ -206,37 +206,37 @@ def kick(bot: Bot, update: Update, args: List[str]) -> str:
     try:
         member = chat.get_member(user_id)
     except BadRequest as excp:
-        if excp.message == "User not found":
-            message.reply_text("I can't seem to find this user")
+        if excp.message == "İstifadəçi tapılmadı":
+            message.reply_text("Görünür bu istifadəçini tapa bilmirəm")
             return ""
         else:
             raise
 
     if is_user_ban_protected(chat, user_id):
-        message.reply_text("I really wish I could kick admins...")
+        message.reply_text("Kaş ki adminləri qadağan edə biləydim ... :)")
         return ""
 
     if user_id == bot.id:
-        message.reply_text("Yeahhh I'm not gonna do that")
+        message.reply_text("Bəli bunu etməyəcəyəm :)")
         return ""
 
     res = chat.unban_member(user_id)  # unban on current user = kick
     if res:
         bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
-        message.reply_text("Kicked!")
+        message.reply_text("Qovuldu!")
         log = "<b>{}:</b>" \
-              "\n#KICKED" \
+              "\n#Qovuldu" \
               "\n<b>Admin:</b> {}" \
-              "\n<b>User:</b> {}".format(html.escape(chat.title),
+              "\n<b>İstifadəçi:</b> {}".format(html.escape(chat.title),
                                          mention_html(user.id, user.first_name),
                                          mention_html(member.user.id, member.user.first_name))
         if reason:
-            log += "\n<b>Reason:</b> {}".format(reason)
+            log += "\n<b>Səbəb:</b> {}".format(reason)
 
         return log
 
     else:
-        message.reply_text("Well damn, I can't kick that user.")
+        message.reply_text("Lənət olsun, ban edə bilmirəm!")
 
     return ""
 
@@ -247,14 +247,14 @@ def kick(bot: Bot, update: Update, args: List[str]) -> str:
 def kickme(bot: Bot, update: Update):
     user_id = update.effective_message.from_user.id
     if is_user_admin(update.effective_chat, user_id):
-        update.effective_message.reply_text("I wish I could... but you're an admin.")
+        update.effective_message.reply_text("Kaş edə biləydim, amma adminsən :)")
         return
 
     res = update.effective_chat.unban_member(user_id)  # unban on current user = kick
     if res:
-        update.effective_message.reply_text("No problem.")
+        update.effective_message.reply_text("Problem yoxdur.")
     else:
-        update.effective_message.reply_text("Huh? I can't :/")
+        update.effective_message.reply_text("Hə? Bacarmıram :/")
 
 
 @run_async
@@ -275,31 +275,31 @@ def unban(bot: Bot, update: Update, args: List[str]) -> str:
     try:
         member = chat.get_member(user_id)
     except BadRequest as excp:
-        if excp.message == "User not found":
-            message.reply_text("I can't seem to find this user")
+        if excp.message == "İstifadəçi tapılmadı":
+            message.reply_text("Görünür bu istifadəçini tapa bilmirəm")
             return ""
         else:
             raise
 
     if user_id == bot.id:
-        message.reply_text("How would I unban myself if I wasn't here...?")
+        message.reply_text("Burda olmasaydım özümü necə açardım ...? :)")
         return ""
 
     if is_user_in_chat(chat, user_id):
-        message.reply_text("Why are you trying to unban someone that's already in the chat?")
+        message.reply_text("Niyə artıq söhbətdə olan birini ləğv etməyə çalışırsınız?")
         return ""
 
     chat.unban_member(user_id)
-    message.reply_text("Yep, this user can join!")
+    message.reply_text("Yaxşı icazə verdim, artıq qoşula bilər.")
 
     log = "<b>{}:</b>" \
-          "\n#UNBANNED" \
+          "\n#Bandan çıxanlar" \
           "\n<b>Admin:</b> {}" \
-          "\n<b>User:</b> {}".format(html.escape(chat.title),
+          "\n<b>İstifadəçi:</b> {}".format(html.escape(chat.title),
                                      mention_html(user.id, user.first_name),
                                      mention_html(member.user.id, member.user.first_name))
     if reason:
-        log += "\n<b>Reason:</b> {}".format(reason)
+        log += "\n<b>Səbəb:</b> {}".format(reason)
 
     return log
 
@@ -310,66 +310,66 @@ def rban(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
 
     if not args:
-        message.reply_text("You don't seem to be referring to a chat/user.")
+        message.reply_text("Görünür, söhbət / istifadəçi haqqında danışmırsınız.")
         return
 
     user_id, chat_id = extract_user_and_text(message, args)
 
     if not user_id:
-        message.reply_text("You don't seem to be referring to a user.")
+        message.reply_text("Deyəsən bir istifadəçiyə istinad etmirsiniz.")
         return
     elif not chat_id:
-        message.reply_text("You don't seem to be referring to a chat.")
+        message.reply_text("Deyəsən bir çata istinad etmirsiniz.")
         return
 
     try:
         chat = bot.get_chat(chat_id.split()[0])
     except BadRequest as excp:
-        if excp.message == "Chat not found":
-            message.reply_text("Chat not found! Make sure you entered a valid chat ID and I'm part of that chat.")
+        if excp.message == "Çat boşdur":
+            message.reply_text("Söhbət tapılmadı! Etibarlı bir söhbət identifikatoru daxil etdiyinizə əmin olun və bu söhbətin bir hissəsiyəm.")
             return
         else:
             raise
 
     if chat.type == 'private':
-        message.reply_text("I'm sorry, but that's a private chat!")
+        message.reply_text("Bağışlayın, amma bu xüsusi söhbətdir!")
         return
 
     if not is_bot_admin(chat, bot.id) or not chat.get_member(bot.id).can_restrict_members:
-        message.reply_text("I can't restrict people there! Make sure I'm admin and can ban users.")
+        message.reply_text("Oradakı insanları məhdudlaşdıra bilmərəm! Admin olduğuma və istifadəçiləri qadağan edə biləcəyimə əmin olun.")
         return
 
     try:
         member = chat.get_member(user_id)
     except BadRequest as excp:
-        if excp.message == "User not found":
-            message.reply_text("I can't seem to find this user")
+        if excp.message == "İstifadəçi tapılmadı":
+            message.reply_text("Görünür bu istifadəçini tapa bilmirəm")
             return
         else:
             raise
 
     if is_user_ban_protected(chat, user_id, member):
-        message.reply_text("I really wish I could ban admins...")
+        message.reply_text("Kaş ki adminləri qadağan edə biləydim ... :)")
         return
 
     if user_id == bot.id:
-        message.reply_text("I'm not gonna BAN myself, are you crazy?")
+        message.reply_text("Mən özüm ban etməyəcəm, dəli olmusan?")
         return
 
     try:
         chat.kick_member(user_id)
-        message.reply_text("Banned!")
+        message.reply_text("Ban olundu!")
     except BadRequest as excp:
-        if excp.message == "Reply message not found":
+        if excp.message == "Cavab mesajı tapılmadı!":
             # Do not reply
-            message.reply_text('Banned!', quote=False)
+            message.reply_text('Ban olundu!', quote=False)
         elif excp.message in RBAN_ERRORS:
             message.reply_text(excp.message)
         else:
             LOGGER.warning(update)
-            LOGGER.exception("ERROR banning user %s in chat %s (%s) due to %s", user_id, chat.title, chat.id,
+            LOGGER.exception("ERROR %s Səbəbiylə %s (%s) bandan çıxarıla bilmirəm %s", user_id, chat.title, chat.id,
                              excp.message)
-            message.reply_text("Well damn, I can't ban that user.")
+            message.reply_text("Lənət olsun, bandan çıxara bilmirəm!")
 
 @run_async
 @bot_admin
@@ -377,76 +377,76 @@ def runban(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
 
     if not args:
-        message.reply_text("You don't seem to be referring to a chat/user.")
+        message.reply_text("Görünür, söhbət / istifadəçi haqqında danışmırsınız.")
         return
 
     user_id, chat_id = extract_user_and_text(message, args)
 
     if not user_id:
-        message.reply_text("You don't seem to be referring to a user.")
+        message.reply_text("Deyəsən bir istifadəçiyə istinad etmirsiniz.")
         return
     elif not chat_id:
-        message.reply_text("You don't seem to be referring to a chat.")
+        message.reply_text("Deyəsən bir çata istinad etmirsiniz.")
         return
 
     try:
         chat = bot.get_chat(chat_id.split()[0])
     except BadRequest as excp:
-        if excp.message == "Chat not found":
-            message.reply_text("Chat not found! Make sure you entered a valid chat ID and I'm part of that chat.")
+        if excp.message == "Çat boşdur":
+            message.reply_text("Söhbət tapılmadı! Etibarlı bir söhbət identifikatoru daxil etdiyinizə əmin olun və bu sohbetin bir hissəsiyəm.")
             return
         else:
             raise
 
     if chat.type == 'private':
-        message.reply_text("I'm sorry, but that's a private chat!")
+        message.reply_text("Bağışlayın, amma bu xüsusi söhbətdir!")
         return
 
     if not is_bot_admin(chat, bot.id) or not chat.get_member(bot.id).can_restrict_members:
-        message.reply_text("I can't unrestrict people there! Make sure I'm admin and can unban users.")
+        message.reply_text("Oradakı insanları məhdudlaşdıra bilmərəm! Admin olduğuma və istifadəçiləri ləğv edə biləcəyimə əmin olun.")
         return
 
     try:
         member = chat.get_member(user_id)
     except BadRequest as excp:
-        if excp.message == "User not found":
-            message.reply_text("I can't seem to find this user there")
+        if excp.message == "İstifadəçi tapılmadı!":
+            message.reply_text("Görünür bu istifadəçini orada tapa bilmirəm")
             return
         else:
             raise
             
     if is_user_in_chat(chat, user_id):
-        message.reply_text("Why are you trying to remotely unban someone that's already in that chat?")
+        message.reply_text("Niyə onsuz da bu söhbətdə olan birini uzaqdan açmağa çalışırsınız?")
         return
 
     if user_id == bot.id:
-        message.reply_text("I'm not gonna UNBAN myself, I'm an admin there!")
+        message.reply_text("Mən özüm ban etməyəcəyəm, mən orada adminəm!")
         return
 
     try:
         chat.unban_member(user_id)
-        message.reply_text("Yep, this user can join that chat!")
+        message.reply_text("Yaxşı icazə verdim, qrupa qoşula bilər.")
     except BadRequest as excp:
-        if excp.message == "Reply message not found":
+        if excp.message == "Cavab mesajı tapılmadı":
             # Do not reply
-            message.reply_text('Unbanned!', quote=False)
+            message.reply_text('Bandan çıxarıldı!', quote=False)
         elif excp.message in RUNBAN_ERRORS:
             message.reply_text(excp.message)
         else:
             LOGGER.warning(update)
-            LOGGER.exception("ERROR unbanning user %s in chat %s (%s) due to %s", user_id, chat.title, chat.id,
+            LOGGER.exception("ERROR %s Səbəbiylə %s (%s) bandan çıxarıla bilmədi %s", user_id, chat.title, chat.id,
                              excp.message)
-            message.reply_text("Well damn, I can't unban that user.")
+            message.reply_text("Lənət olsun, bandan çıxara bilmədim!")
 
 
 __help__ = """
- - /kickme: kicks the user who issued the command
+ - /kickme: əmri verən istifadəçini qovur
 
-*Admin only:*
- - /ban <userhandle>: bans a user. (via handle, or reply)
- - /tban <userhandle> x(m/h/d): bans a user for x time. (via handle, or reply). m = minutes, h = hours, d = days.
- - /unban <userhandle>: unbans a user. (via handle, or reply)
- - /kick <userhandle>: kicks a user, (via handle, or reply)
+*Yalnız Admin:*
+ - /ban <userhandle>: ban etmək. (mesajına cavab yazmaqla, tağ ilə (Məsələn: /ban @username)) 
+ - /tban <userhandle>: vaxt ilə ban etmək (mesajına cavab yazmaqla, tağ ilə (Məsələn: /tban @username 1m/h/d)). m = dəqiqə, h = saat, d = gün.
+ - /unban <userhandle>:bandan çıxarmaq. (mesajına cavab yazmaqla, tağ ilə (Məsələn: /unban @username))
+ - /kick <userhandle>: qovmaq. (mesajına cavab yazmaqla, tağ ilə (Məsələn: /kick @username))
 """
 
 __mod_name__ = "Bans"
