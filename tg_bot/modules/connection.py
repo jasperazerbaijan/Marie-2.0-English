@@ -155,7 +155,7 @@ Tədbirlər əlaqəli qruplarla mövcuddur:
  - /allowconnect on/yes/off/no: İstifadəçilərin qruplaşdırılmasına icazə verin
 """
 
-__mod_name__ = "Connections"
+__mod_name__ = "Əlaqə"
 
 CONNECT_CHAT_HANDLER = CommandHandler("connect", connect_chat, allow_edited=True, pass_args=True)
 DISCONNECT_CHAT_HANDLER = CommandHandler("disconnect", disconnect_chat, allow_edited=True)
