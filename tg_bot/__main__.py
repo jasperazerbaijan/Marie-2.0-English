@@ -42,8 +42,8 @@ Salam! Mənim adım *{}*.
    - Qrupda:
 
 {}
-And the following:
-""".format(dispatcher.bot.first_name, "" if not ALLOW_EXCL else "\nAll of the following commands  / or ! can  be used...\n")
+Panel:
+""".format(dispatcher.bot.first_name, "" if not ALLOW_EXCL else "\nBütün komandaları / və ya ! ilə işlədə bilərsiniz. Məsələn: /start \n")
 
 DONATE_STRING = """Heyvanları sevək! 
 Baxımda [Yaradıcım](t.me/elgunismayiloff) """
@@ -307,8 +307,8 @@ def settings_button(bot: Bot, update: Update):
             chat_id = next_match.group(1)
             next_page = int(next_match.group(2))
             chat = bot.get_chat(chat_id)
-            query.message.reply_text("Hi there! There are quite a few settings for {} - go ahead and pick what "
-                                     "you're interested in.".format(chat.title),
+            query.message.reply_text("Salam! {} üçün kifayət qədər az parametr var. Davam edin. "
+                                     "Sən maraqlanırsan".format(chat.title),
                                      reply_markup=InlineKeyboardMarkup(
                                          paginate_modules(next_page + 1, CHAT_SETTINGS, "stngs",
                                                           chat=chat_id)))
@@ -316,8 +316,8 @@ def settings_button(bot: Bot, update: Update):
         elif back_match:
             chat_id = back_match.group(1)
             chat = bot.get_chat(chat_id)
-            query.message.reply_text(text="Hi there! There are quite a few settings for {} - go ahead and pick what "
-                                          "you're interested in.".format(escape_markdown(chat.title)),
+            query.message.reply_text(text="Salam! {} üçün kifayət qədər az parametr var. Davam edin. "
+                                     "Sən maraqlanırsan".format(escape_markdown(chat.title)),
                                      parse_mode=ParseMode.MARKDOWN,
                                      reply_markup=InlineKeyboardMarkup(paginate_modules(0, CHAT_SETTINGS, "stngs",
                                                                                         chat=chat_id)))
@@ -326,14 +326,14 @@ def settings_button(bot: Bot, update: Update):
         bot.answer_callback_query(query.id)
         query.message.delete()
     except BadRequest as excp:
-        if excp.message == "Message is not modified":
+        if excp.message == "Mesaj dəyişdirilməyib":
             pass
         elif excp.message == "Query_id_invalid":
             pass
-        elif excp.message == "Message can't be deleted":
+        elif excp.message == "Mesaj silinməyib.":
             pass
         else:
-            LOGGER.exception("Exception in settings buttons. %s", str(query.data))
+            LOGGER.exception("Ayarlar düymələrindəki istisna. %s", str(query.data))
 
 
 @run_async
@@ -346,14 +346,14 @@ def get_settings(bot: Bot, update: Update):
     # ONLY send settings in PM
     if chat.type != chat.PRIVATE:
         if is_user_admin(chat, user.id):
-            text = "Click here to get this chat's settings, as well as yours."
+            text = "Bu söhbətin, eləcə də sənin ayarlarını almaq üçün buraya vurun."
             msg.reply_text(text,
                            reply_markup=InlineKeyboardMarkup(
-                               [[InlineKeyboardButton(text="Settings",
+                               [[InlineKeyboardButton(text="Ayarlar",
                                                       url="t.me/{}?start=stngs_{}".format(
                                                           bot.username, chat.id))]]))
         else:
-            text = "Click here to check your settings."
+            text = "Ayarlarınızı yoxlamaq üçün buraya vurun."
 
     else:
         send_settings(chat.id, user.id, True)
@@ -368,17 +368,17 @@ def donate(bot: Bot, update: Update):
         update.effective_message.reply_text(DONATE_STRING, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
         if OWNER_ID != 254318997 and DONATION_LINK:
-            update.effective_message.reply_text("You can also donate to the person currently running me "
-                                                "[here]({})".format(DONATION_LINK),
+            update.effective_message.reply_text("You can donate right now."
+                                                "[Bağış et]({})".format(DONATION_LINK),
                                                 parse_mode=ParseMode.MARKDOWN)
 
     else:
         try:
             bot.send_message(user.id, DONATE_STRING, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
-            update.effective_message.reply_text("I've PM'ed you about donating to my creator!")
+            update.effective_message.reply_text("Bağış etməyiniz barədə sizə məlumat verdim")
         except Unauthorized:
-            update.effective_message.reply_text("Contact me in PM first to get donation information.")
+            update.effective_message.reply_text("Bağış məlumatlarını almaq üçün əvvəlcə mənimlə əlaqə saxlayın.")
 
 
 def migrate_chats(bot: Bot, update: Update):
@@ -392,11 +392,11 @@ def migrate_chats(bot: Bot, update: Update):
     else:
         return
 
-    LOGGER.info("Migrating from %s, to %s", str(old_chat), str(new_chat))
+    LOGGER.info("%s dən %s köçürülür", str(old_chat), str(new_chat))
     for mod in MIGRATEABLE:
         mod.__migrate__(old_chat, new_chat)
 
-    LOGGER.info("Successfully migrated!")
+    LOGGER.info("Köçürülmə başarılı!")
     raise DispatcherHandlerStop
 
 
@@ -444,5 +444,5 @@ def main():
 
 
 if __name__ == '__main__':
-    LOGGER.info("Successfully loaded modules: " + str(ALL_MODULES))
+    LOGGER.info("Modullar uğurla yükləndi: " + str(ALL_MODULES))
     main()
