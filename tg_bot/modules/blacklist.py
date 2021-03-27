@@ -15,7 +15,7 @@ from tg_bot.modules.helper_funcs.misc import split_message
 
 BLACKLIST_GROUP = 11
 
-BASE_BLACKLIST_STRING = "Current <b>blacklisted</b> words:\n"
+BASE_BLACKLIST_STRING = "Cari <b>qara siyahıdakı</b> sözlər:\n"
 
 
 @run_async
@@ -37,7 +37,7 @@ def blacklist(bot: Bot, update: Update, args: List[str]):
     split_text = split_message(filter_list)
     for text in split_text:
         if text == BASE_BLACKLIST_STRING:
-            msg.reply_text("There are no blacklisted messages here!")
+            msg.reply_text("Burada qara siyahıya alınmış mesaj yoxdur!")
             return
         msg.reply_text(text, parse_mode=ParseMode.HTML)
 
@@ -55,15 +55,15 @@ def add_blacklist(bot: Bot, update: Update):
             sql.add_to_blacklist(chat.id, trigger.lower())
 
         if len(to_blacklist) == 1:
-            msg.reply_text("Added <code>{}</code> to the blacklist!".format(html.escape(to_blacklist[0])),
+            msg.reply_text("<code>{}</code> qara siyahıya əlavə olundu!".format(html.escape(to_blacklist[0])),
                            parse_mode=ParseMode.HTML)
 
         else:
             msg.reply_text(
-                "Added <code>{}</code> triggers to the blacklist.".format(len(to_blacklist)), parse_mode=ParseMode.HTML)
+                "<code>{}</code> tetiklər əlavə olundu.".format(len(to_blacklist)), parse_mode=ParseMode.HTML)
 
     else:
-        msg.reply_text("Tell me which words you would like to remove from the blacklist.")
+        msg.reply_text("Qara siyahıdan hansı sözləri çıxarmaq istədiyinizi söyləyin.")
 
 
 @run_async
@@ -83,28 +83,28 @@ def unblacklist(bot: Bot, update: Update):
 
         if len(to_unblacklist) == 1:
             if successful:
-                msg.reply_text("Removed <code>{}</code> from the blacklist!".format(html.escape(to_unblacklist[0])),
+                msg.reply_text("<code>{}</code> qara siyahıdan silindi!".format(html.escape(to_unblacklist[0])),
                                parse_mode=ParseMode.HTML)
             else:
-                msg.reply_text("This isn't a blacklisted trigger...!")
+                msg.reply_text("Bu, qara siyahıya alınan bir tetikleyici deyil...!")
 
         elif successful == len(to_unblacklist):
             msg.reply_text(
-                "Removed <code>{}</code> triggers from the blacklist.".format(
+                "<code>{}</code> tetik qara siyahıdan çıxarıldı.".format(
                     successful), parse_mode=ParseMode.HTML)
 
         elif not successful:
             msg.reply_text(
-                "None of these triggers exist, so they weren't removed.".format(
+                "Bu tetiklərdən heç biri yoxdu, buna görədə silinmədi.".format(
                     successful, len(to_unblacklist) - successful), parse_mode=ParseMode.HTML)
 
         else:
             msg.reply_text(
-                "Removed <code>{}</code> triggers from the blacklist. {} did not exist, "
-                "so were not removed.".format(successful, len(to_unblacklist) - successful),
+                "Qara siyahıdan <code>{}</code> tetikləyici silindi. {} silindi, "
+                "buna görə qaldırılmadı.".format(successful, len(to_unblacklist) - successful),
                 parse_mode=ParseMode.HTML)
     else:
-        msg.reply_text("Tell me which words you would like to remove from the blacklist.")
+        msg.reply_text("Qara siyahıdan hansı sözləri çıxarmaq istədiyinizi söyləyin.")
 
 
 @run_async
@@ -123,10 +123,10 @@ def del_blacklist(bot: Bot, update: Update):
             try:
                 message.delete()
             except BadRequest as excp:
-                if excp.message == "Message to delete not found":
+                if excp.message == "Silmək üçün mesaj tapılmadı":
                     pass
                 else:
-                    LOGGER.exception("Error while deleting blacklist message.")
+                    LOGGER.exception("Qara siyahıdakı mesaj silinərkən xəta baş verdi.")
             break
 
 
@@ -136,30 +136,30 @@ def __migrate__(old_chat_id, new_chat_id):
 
 def __chat_settings__(chat_id, user_id):
     blacklisted = sql.num_blacklist_chat_filters(chat_id)
-    return "There are {} blacklisted words.".format(blacklisted)
+    return "Qara siyahıya {} alınmış söz vardır.".format(blacklisted)
 
 
 def __stats__():
-    return "{} blacklist triggers, across {} chats.".format(sql.num_blacklist_filters(),
+    return "{} qara siyahı tetikləyicisi, {} söhbətləri arasında.".format(sql.num_blacklist_filters(),
                                                             sql.num_blacklist_filter_chats())
 
 
-__mod_name__ = "Word Blacklists"
+__mod_name__ = "Dünya qara siyahısı"
 
 __help__ = """
-Blacklists are used to stop certain triggers from being said in a group. Any time the trigger is mentioned, \
-the message will immediately be deleted. A good combo is sometimes to pair this up with warn filters!
+Qara siyahılar müəyyən tetikleyicilerin bir qrupda söylənməsini dayandırmaq üçün istifadə olunur. Tetikleyici qeyd edildiyi zaman, \
+mesaj dərhal silinəcəkdir. Bəzən bunu xəbərdarlıq filtrləri ilə birləşdirmək üçün yaxşı bir kombo!
 
-*NOTE:* blacklists do not affect group admins.
+* DİQQƏT: * qara siyahılar qrup adminlərini təsir etmir.
 
- - /blacklist: View the current blacklisted words.
+ - /blacklist: Cari qara siyahıya alınan sözlərə baxın.
 
-*Admin only:*
- - /addblacklist <triggers>: Add a trigger to the blacklist. Each line is considered one trigger, so using different \
-lines will allow you to add multiple triggers.
- - /unblacklist <triggers>: Remove triggers from the blacklist. Same newline logic applies here, so you can remove \
-multiple triggers at once.
- - /rmblacklist <triggers>: Same as above.
+* Yalnız admin: *
+ - /addblacklist <triggers>: Qara siyahıya bir trigger əlavə edin. Hər sətir bir tetikleyici sayılır, buna görə fərqli \
+xətlər birdən çox tətik əlavə etməyə imkan verəcəkdir.
+ - /unblacklist <triggers>: Qara siyahıdan tetikleyicileri silin. Eyni yeni satır məntiqi burada tətbiq olunur, buna görə də silmək olar \
+eyni anda birdən çox tətik.
+ - /rmblacklist <triggers>: Yuxarıdakı kimi.
 """
 
 BLACKLIST_HANDLER = DisableAbleCommandHandler("blacklist", blacklist, filters=Filters.group, pass_args=True,
