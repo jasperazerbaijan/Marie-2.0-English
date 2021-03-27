@@ -65,7 +65,7 @@ def export_data(bot: Bot, update: Update):
     msg.reply_text("")
 
 
-__mod_name__ = "Backups"
+__mod_name__ = "Yedəklə"
 
 __help__ = """
 * Yalnız admin: *
